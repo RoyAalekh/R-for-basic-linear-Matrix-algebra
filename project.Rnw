@@ -1,0 +1,1338 @@
+\documentclass[12pt]{article}
+\title{Computational Linear Algebra Project}
+\author{Aalekh Roy \\ 2020D001}
+\date{June 2021}
+\pagestyle{headings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+linktoc=all,
+linkcolor=blue
+}
+
+
+
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\section{Acknowledgement}
+
+
+This project is aimed to compile the program codes related to matrix algebra covered in the course titled "Computational Linear Algebra" offered in 2020 under the guidance of Dr. Sudhakar Sahoo.
+
+The document has been compiled in RStudio using knitr package which provides an efficient yet beautiful way to make latex style document with code snippets. The language is R, due to the inbuilt libraries and overall functionality of matrix theory and linear algebra provided by R.
+
+The author of the document claims no responsibility for the material provided as all the material/codes has been accumulated via various sources. The only claim he intends to make is the effort to compile the document word by word as he believes in "Learning by Doing". A special thanks to Dr. Sudhakar for providing me this opportunity.
+\clearpage
+
+\section{Vector Operations}
+\subsection{Define vectors}
+
+Vectors are generally created using the c() function.
+
+<<>>=
+# Define two vectors
+x <- c(30, 20, 40, 10)
+y <- c(20, 15, 18, 40)
+print(x)
+print(y)
+@
+
+If we want to create a vector of consecutive numbers, the : operator is very helpful.
+<<>>=
+x=1:7 ; x
+y=2:-2 ; y
+@
+
+More complex sequences can be created using the seq() function, like defining number of points in an interval, or the step size.
+
+<<>>=
+seq(1, 3, by=0.2)          # specify step size
+seq(1, 5, length.out=4)    # specify length of the vector
+@
+
+
+\subsection{Arithemtic of vectors}
+We can add, subtract, multiply by a scalar and  calculate dot or inner product of vectors.
+
+\subsubsection{Addition and Subtraction}
+
+Let $a$ and $b$ be $n$ -vectors. The sum $a+b$ is the $n$ -vector
+$$
+a+b=\left[\begin{array}{c}
+a_{1} \\
+a_{2} \\
+\vdots \\
+a_{n}
+\end{array}\right]+\left[\begin{array}{c}
+b_{1} \\
+b_{2} \\
+\vdots \\
+b_{n}
+\end{array}\right]=\left[\begin{array}{c}
+a_{1}+b_{1} \\
+a_{2}+b_{2} \\
+\vdots \\
+a_{n}+b_{n}
+\end{array}\right]=b+a
+$$
+Only vectors of the same dimension can be added.\\
+
+Example 
+$$
+\left[\begin{array}{l}
+1 \\
+3 \\
+2
+\end{array}\right]+\left[\begin{array}{l}
+2 \\
+8 \\
+9
+\end{array}\right]=\left[\begin{array}{l}
+1+2 \\
+3+8 \\
+2+9
+\end{array}\right]=\left[\begin{array}{c}
+3 \\
+11 \\
+11
+\end{array}\right]
+$$
+
+<<>>=
+x=c(1,3,2)
+y=c(2,8,9)
+x + y
+x - y
+@
+
+If the the vectors don't have the same length the elements of the smallest will be recycled:
+<<>>=
+x
+z=c(10, 10)
+z
+x + z #every element of x gets added by 10 even though the vector z has only 2 elements
+@
+
+\subsubsection{Multiplication by scalar}
+
+To multiple by a scalar, we use * operator:\\
+
+If $a$ is a vector and $\alpha$ is a number then $\alpha a$ is the vector
+$$
+\alpha a=\left[\begin{array}{c}
+\alpha a_{1} \\
+\alpha a_{2} \\
+\vdots \\
+\alpha a_{n}
+\end{array}\right]
+$$
+
+Example 
+$$
+7\left[\begin{array}{l}
+1 \\
+3 \\
+2
+\end{array}\right]=\left[\begin{array}{c}
+7 \\
+21 \\
+14
+\end{array}\right]
+$$
+<<>>=
+x=c(1,3,2)
+x
+7 * x
+@
+
+\subsubsection{Dot or Inner product of vectots}
+Let $a=\left(a_{1}, \ldots, a_{n}\right)$ and $b=\left(b_{1}, \ldots, b_{n}\right)$. The (inner) product of $a$ and $b$ is
+$$
+a \cdot b=a_{1} b_{1}+\cdots+a_{n} b_{n}
+$$
+Note, that the product is a number - not a vector, but since R takes the vectors as a list and it outputs as a matrix object.\\
+
+For calculating dot product(Inner product), we use:
+<<>>=
+x=c(1,3,2)
+y=c(1,2,3)
+x %*% y
+@
+
+Note that this operator returns a matrix object. If we need just the numeric value, use the \emph{as.numeric} function :
+
+<<>>=
+as.numeric(x %*% y)
+@
+\subsection{Norm of a vector}
+The length (or norm) of a vector $a$ is
+$$
+\|a\|=\sqrt{a \cdot a}=\sqrt{\sum_{i=1}^{n} a_{i}^{2}}
+$$
+
+The vector magnitude, or norm, can be obtained as follows:
+<<>>=
+x
+sqrt(x %*% x)
+@
+\subsection{Transpose of a vector}
+
+
+Transposing a vector means turning a column (row) vector into a row (column)
+vector. The transpose is denoted by $T$.\\
+
+Example 
+$$
+\left[\begin{array}{l}
+1 \\
+3 \\
+2
+\end{array}\right]^{\top}=[1,3,2] \text { og } \quad[1,3,2]^{\top}=\left[\begin{array}{l}
+1 \\
+3 \\
+2
+\end{array}\right]
+$$
+Hence transposing twice takes us back to where we started:
+$$
+a=\left(a^{\top}\right)^{\top}
+$$
+
+<<>>=
+x=c(1,3,2)
+x
+t(x)
+@
+
+\subsection{The 0-vector and 1-vector}
+
+
+The 0-vector(1-vector) is a vector with 0(1) on all entries. The 0-vector (1-vector) is frequently written simply as 0(1).
+
+<<>>=
+rep(0,5) #repeat function
+rep(1,5)
+@
+
+\subsection{Orthogonal(perpendicular) vectors}
+Two vectors v1 and v2 are orthogonal if their inner or dot product is zero, written
+v1.v2 = 0
+<<>>=
+v1=c(1,1)
+v1
+v2=c(-1,1)
+v2
+v1%*%v2
+@
+
+\clearpage
+
+\section{Matrix Operations}
+\subsection{Define a matrix}
+
+An $r \times c$ matrix $A$ (reads "an $r$ times $c$ matrix" $)$ is a table with $r$ rows og $c$ columns
+$$
+A=\left[\begin{array}{cccc}
+a_{11} & a_{12} & \ldots & a_{1 c} \\
+a_{21} & a_{22} & \ldots & a_{2 c} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{r 1} & a_{r 2} & \ldots & a_{r c}
+\end{array}\right]
+$$
+Note that one can regard $A$ as consisting of $c$ columns vectors put after each other:
+$$
+A=\left[a_{1}: a_{2}: \cdots: a_{c}\right]
+$$
+
+We use the inbuilt function in R to define matrices:
+<<>>=
+# Define a matrix
+m <- c(7, -6, 12, 8)
+m <- matrix(m, nrow = 2)
+m
+@
+
+Note that the numbers 1, 3, 2, 2, 8, 9 are read into the matrix column by
+column. To get the numbers read in row by row do \emph{byrow=TRUE}.
+
+<<>>=
+m1=matrix(c(7,-6,12,8),ncol=2,byrow=T)
+m1
+@
+
+
+
+\subsection{Matrix Addition and Subtraction}
+We can add and subtract two matrices just as we can with vectors i.e using arithmetic addition and subtraction element wise.
+
+Let A and B be 3x2 matrices. The sum A + B is the 3x2 matrix obtained
+by adding A and B element-wise.
+Only matrices with the same dimensions can be added/subtracted.
+
+Example 
+$$
+\left[\begin{array}{ll}
+1 & 2 \\
+3 & 8 \\
+2 & 9
+\end{array}\right]+\left[\begin{array}{ll}
+5 & 4 \\
+8 & 2 \\
+3 & 7
+\end{array}\right]=\left[\begin{array}{rr}
+6 & 6 \\
+11 & 10 \\
+5 & 16
+\end{array}\right]
+$$
+
+<<>>=
+x=c(1,2,3,8,2,9)
+y=c(5,4,8,2,3,7)
+x=matrix(x,ncol=2,byrow = TRUE)
+y=matrix(y,ncol=2,byrow=TRUE)
+x
+y
+x+y
+x-y
+@
+
+\subsection{Transpose of Matrix}
+A matrix is transposed by interchanging rows and columns and is denoted by "T".
+Example 
+$$
+\left[\begin{array}{ll}
+1 & 2 \\
+3 & 8 \\
+2 & 9
+\end{array}\right]^{\top}=\left[\begin{array}{lll}
+1 & 3 & 2 \\
+2 & 8 & 9
+\end{array}\right]
+$$
+Note that if $A$ is an $r \times c$ matrix then $A^{\top}$ is a $c \times r$ matrix.
+
+<<>>=
+m
+t(m)
+@
+
+\subsection{Multiplication of a matrix and a vector}
+Let $A$ be an $r \times c$ matrix and let $b$ be a $c$ -dimensional column vector. The product $A b$ is the $r \times 1$ matrix
+$$
+A b=\left[\begin{array}{cccc}
+a_{11} & a_{12} & \ldots & a_{1 c} \\
+a_{21} & a_{22} & \ldots & a_{2 c} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{r 1} & a_{r 2} & \ldots & a_{r c}
+\end{array}\right]\left[\begin{array}{c}
+b_{1} \\
+b_{2} \\
+\vdots \\
+b_{c}
+\end{array}\right]=\left[\begin{array}{c}
+a_{11} b_{1}+a_{12} b_{2}+\cdots+a_{1 c} b_{c} \\
+a_{21} b_{1}+a_{22} b_{2}+\cdots+a_{2 c} b_{c} \\
+\vdots \\
+a_{r 1} b_{1}+a_{r 2} b_{2}+\cdots+a_{r c} b_{c}
+\end{array}\right]
+$$
+Example 
+$$
+\left[\begin{array}{ll}
+1 & 2 \\
+3 & 8 \\
+2 & 9
+\end{array}\right]\left[\begin{array}{l}
+5 \\
+8
+\end{array}\right]=\left[\begin{array}{l}
+1 \cdot 5+2 \cdot 8 \\
+3 \cdot 5+8 \cdot 8 \\
+2 \cdot 5+9 \cdot 8
+\end{array}\right]=\left[\begin{array}{l}
+21 \\
+79 \\
+82
+\end{array}\right]
+$$
+<<>>=
+A <- matrix(c(1, 3, 2, 2, 8, 9), ncol = 3)
+A
+a <- c(1, 3, 2)
+a
+J = A %*% a #Matrix multiplication
+J
+@
+\subsection{Matrix Matrix Multiplication}
+When we multiply two numbers $a, b$ (scalars or $1 \times 1$ matrices) we simply multiply them as $a * b$ which always equals $b * a .$ Not so if we are multiplying matrices! This section will show that the order of multiplication does matter for matrices $A, B$. That is, matrix multiplication $A B$ is not commutative $A B \neq B A$. In fact, it is possible that one or more of the matrix multiplications may not be well defined (conformable).\\
+
+Recall the curly braces notation and let $A=\left\{a_{i j}\right\}$ be $r_{a} \times c_{a}$ matrix with $i=1,2, \cdots, r_{a}$ rows and $j=1,2, \cdots, c_{a}$ columns. Similarly let $B=\left\{b_{k \ell}\right\}$ matrix have $k=1,2, \cdots, r_{b}$ rows, and $\ell=1,2, \cdots, c_{b}$ columns. Let us understand the notion of matrix conformability before discussing matrix multiplication. If $A$ is $r_{a} \times c_{a}$ matrix, and $B$ is is $r_{b} \times c_{b}$ matrix, then the row column multiplication of $A B$ is conformable (well defined) only if Number of columns of $A=c_{a}=r_{b}=$ Number of rows of $B$. An easy way to remember this is that in any "row-column" multiplication, we must have equality of the numbers of "column-rows".
+<<>>=
+A <- matrix(c(1, 3, 2, 2, 8, 9), ncol = 2);A
+
+B <- matrix(c(5, 8, 4, 2), ncol = 2);B
+A%*%B
+@
+\subsection{Rank of a Matrix}
+The rank of a matrix corresponds to the maximal number of linearly independent columns of the matrix.
+
+To obtain this value, use the function qr as follows:
+<<>>=
+# Rank of a Matrix
+C <- matrix(c(1, 0, 1, -2, -3, 1, 3, 3, 0), nrow = 3, byrow = TRUE)
+C
+qr(C)$rank
+D <- matrix(c(1, 1, 0, 2, -1, -1, 0, -2), nrow = 2, byrow = TRUE)
+D
+qr(D)$rank
+@
+\subsection{Trace of a matrix}
+ Trace of a matrix is the sum of the values on the main diagonal(upper left to lower right) of the matrix.
+ 
+ tr() function is used to calculate the trace of a matrix.We need to have (psych) package installed.
+<<>>=
+
+# R program to calculate
+# trace of a matrix
+  
+# Loading library
+library(psych)
+  
+# Creating a matrix
+A = matrix( 
+  c(6, 1, 1, 4, -2, 5, 2, 8, 7),  
+  nrow = 3,              
+  ncol = 3,              
+  byrow = TRUE           
+) 
+  
+A
+  
+# Calling tr() function
+cat("Trace of A:\n") 
+tr(A)
+@
+\subsection{Null Space, Column Space of a matrix}
+\textbf{Null Space}\\
+The null space of any matrix A consists of all the vectors B such that AB = 0 and B is not zero. It can also be thought as the solution obtained from AB = 0 where A is known matrix of size m x n and B is matrix to be found of size n x k. The size of the null space of the matrix provides us with the number of linear relations among attributes.\\ 
+
+\textbf{Column Space}\\
+A column space (or range) of matrix X is the space that is spanned by X's columns.\\
+
+\textbf{Row Space}\\
+A row space is spanned by rows of a matrix.
+
+In R, there is an inbuilt function "nullspace()" to find the nullspace of a matrix and orth() function for column space
+<<>>=
+library(pracma)
+M <- matrix(1:12, 3, 4)
+Rank(M) 
+nullspace(M)#nullspace of M
+orth(M) #column space of M
+#Column space of a transpose of a matrix is row space of the original matrix
+orth(t(M)) #row space of M
+@
+
+
+\subsection{Diagonal Matrix}
+A square matrix in which every element except the principal diagonal elements is zero is called a Diagonal Matrix. A square matrix D = [dij]n x n will be called a diagonal matrix if dij = 0, whenever i is not equal to j.
+<<>>=
+# R program to illustrate
+# diag function
+  
+# Calling the diag() function with 
+# some number which will act as
+# rows as well as columns number
+diag(3)
+diag(5)
+# R program to illustrate
+# diag function
+  
+# Calling the diag() function
+diag(5, 2, 3)
+diag(10, 3, 3)
+
+#Extract the diagonal of a matrix
+m=matrix(c(1,2,3,4,5,6,7,8,9),nrow=3)
+m
+diag(m)
+@
+\subsection{Triangular Matrix}
+A triangular matrix is a special kind of square matrix.\\ A square matrix is called lower triangular if all the entries above the main diagonal are zero. Similarly, a square matrix is called upper triangular if all the entries below the main diagonal are zero.\\
+An upper triangular matrix $\mathrm{U}$ is defined by
+$$
+U_{i j}=\left\{\begin{array}{ll}
+a_{i j} & \text { for } i \leq j \\
+0 & \text { for } i>j
+\end{array}\right.
+$$
+Written explicitly,
+$$
+\mathrm{U}=\left[\begin{array}{cccc}
+a_{11} & a_{12} & \cdots & a_{1 n} \\
+0 & a_{22} & \cdots & a_{2 n} \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & a_{n n}
+\end{array}\right]
+$$
+A lower triangular matrix $\mathrm{L}$ is defined by
+$$
+L_{i j}=\left\{\begin{array}{ll}
+a_{i j} & \text { for } i \geq j \\
+0 & \text { for } i<j
+\end{array}\right.
+$$
+Written explicitly,
+$$
+\mathrm{L}=\left[\begin{array}{cccc}
+a_{11} & 0 & \cdots & 0 \\
+a_{21} & a_{22} & \cdots & 0 \\
+\vdots & \vdots & \ddots & 0 \\
+a_{n 1} & a_{n 2} & \cdots & a_{n n}
+\end{array}\right]
+$$
+
+<<>>=
+library(fBasics)
+A=matrix(1:9,3) #create simple matrix 3 by 3
+A #display the matrix
+diag(A)#display diagonals
+cumprod(diag(A)) #product of diagonals
+triang(A)#display lower triangular matrix
+det(triang(A)) #det of lower triangular matrix
+Triang(A)#display upper triangular matrix
+det(Triang(A))#det of upper triangular matrix
+@
+
+\subsection{Inverse of matrix}
+In general, the inverse of an $n \times n$ matrix $A$ is the matrix $B$ (which is also $n \times n$ ) which when multiplied with $A$ gives the identity matrix $I$. That is,
+$$
+A B=B A=I
+$$
+One says that $B$ is $A$ 's inverse and writes $B=A^{-1}$. Likewise, $A$ is $B$ s inverse.
+Example 9 Let
+$$
+A=\left[\begin{array}{ll}
+1 & 3 \\
+2 & 4
+\end{array}\right] \quad B=\left[\begin{array}{rr}
+-2 & 1.5 \\
+1 & -0.5
+\end{array}\right]
+$$
+Now $A B=B A=I$ so $B=A^{-1}$.\\
+Example 10 If $A$ is a $1 \times 1$ matrix, i.e. a number, for example $A=4$, then $A^{-1}=1 / 4$\\
+Some facts about inverse matrices are:\\
+$-$ Only square matrices can have an inverse, but not all square matrices have an inverse.\\
+$-$ When the inverse exists, it is unique.\\
+$-$ Finding the inverse of a large matrix $A$ is numerically complicated (but computers do it for us).
+
+Finding the inverse of a matrix in $\mathrm{R}$ is done using the solve() function:
+<<>>=
+A=matrix(c(1,3,2,4),ncol=2,byrow=T)
+A
+B=solve(A)
+B
+A%*%B
+@
+\subsection{Determinant of matrix}
+Let the matrix $A$ be a square matrix $A=\left(a_{i j}\right)$ with $i$ and $j=1,2, \cdots, n$. The determinant is a scalar number. When $n=2$ we have a simple calculation of the determinant as follows:
+$$
+\operatorname{det}(A)=\left|\begin{array}{ll}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{array}\right|=a_{11} a_{22}-a_{21} a_{22}
+$$
+where one multiplies the elements along the diagonal (going from top left corner to bottom right corner) and subtracts a similar multiplication of diagonals going from bottom to top.
+
+In $\mathrm{R}$ the function function 'matrix' creates a square matrix if the argument list neglects to specify a second dimension. For example 'A $=\operatorname{matrix}(10: 13,2)$ ' creates a $2 \times 2$ square matrix from the four numbers:
+$(10,11,12,13)$. In $\mathrm{R}$ the function 'det' gives the determinant as shown below. For the following example, the $\operatorname{det}(\mathrm{A})$ is $-2$ and is also obtained by cross multiplication and subtraction by $10^{*} 13-11^{*} 12 .$
+
+<<>>=
+A=matrix(10:13,2) #creates a square matrix from 10,11,12,13
+A
+det(A)
+@
+
+
+\clearpage
+
+\section{Sparse Matrix}
+If most of the elements of the matrix have 0 value, then it is called a sparse matrix.\\
+\textbf{Why to use Sparse Matrix instead of simple matrix ?}\\
+Storage: There are lesser non-zero elements than zeros and thus lesser memory can be used to store only those elements.\\
+Computing time: Computing time can be saved by logically designing a data structure traversing only non-zero elements.\\
+We can create a sparse matrix from a dense matrix:
+<<>>=
+library(Matrix)
+data=rnorm(1e6) #rnorm function generates random 
+#number with argument as the number of elements
+zero_index=sample(1e6)[1:9e5] #create a vector with million elements,
+                               #but 90% of the elements are zeros
+data[zero_index]=0
+mat = matrix(data, ncol=1000) #create matrix using above data
+print(mat[1:5,1:5]) #display 5*5 sample of matrix
+print(object.size(mat),units="auto") #check the size of the matrix
+mat1 = Matrix(mat,sparse=TRUE) #using sparse matrix library to convert the matrix
+print(mat1[1:5,1:5]) # see the sparse 5*5 matrix
+print(object.size(mat1),units="auto") # print size of sparse matrix
+image(mat1[1:10,1:10]) #using image function to visualize
+@
+
+\begin{figure}[h]
+\includegraphics[width=\linewidth]{Rplots.pdf}
+\caption{The sparse matrix 10x10}
+\label{fig:1}
+\end{figure}
+
+\clearpage
+\section{Block Matrices}
+It is often convenient to partition a matrix $M$ into smaller matrices called blocks, like so:
+$$
+\begin{aligned}
+&M=\left(\begin{array}{lll|l}
+1 & 2 & 3 & 1 \\
+4 & 5 & 6 & 0 \\
+\frac{7}{0} & 8 & 9 & \frac{1}{0}
+\end{array}\right)=\left(\begin{array}{ll}
+A & B \\
+\hline C & D
+\end{array}\right) \\
+&\text { Here } A=\left(\begin{array}{lll}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{array}\right), B=\left(\begin{array}{l}
+1 \\
+0 \\
+1
+\end{array}\right), C=\left(\begin{array}{lll}
+0 & 1 & 2
+\end{array}\right), D=(0) .
+\end{aligned}
+$$
+- The blocks of a block matrix must fit together to form a rectangle. So
+There are many ways to cut up an $n \times n$ matrix into blocks. Often context or the entries of the matrix will suggest a useful way to divide the matrix into blocks. For example, if there are large blocks of zeros in a matrix, or blocks that look like an identity matrix, it can be useful to partition the matrix accordingly.
+<<>>=
+library(blockmatrix)
+
+# create toy matrices (block matrix elements)
+# with values which makes it easier to track them in the block matrix in the example here
+A <- matrix(c(1,2,3,4), nrow = 2, ncol = 2)
+B <- matrix(c(5,6,7,8), nrow = 2, ncol = 2)
+
+# function for creating the block matrix
+# n: number of repeating blocks in each dimension
+# (I use n instead of T, to avoid confusion with T as in TRUE)
+# m_list: the two matrices in a list
+
+block <- function(n, m_list){      
+  # create a 'layout matrix' of the block matrix elements
+  m <- matrix("B", nrow = n, ncol = n)
+  diag(m) <- "A"
+
+  # build block matrix
+  as.matrix(blockmatrix(dim = dim(m_list[[1]]), value = m, list = m_list))
+}
+
+# try with different n
+block(n = 2, m_list = list(A = A, B = B))
+#block(n = 3, m_list = list(A = A, B = B))
+#block(n = 5, m_list = list(A = A, B = B))
+@
+\clearpage
+
+\section{Strassen's Matrix Multiplication Algorithm}
+\textbf{Illustration of method}\\
+The Strassen's algorithm is an algorithm used for matrix multiplication. It is faster than the standard matrix multiplication algorithm, but would be slower than the fastest known algorithm (Coppersmith-Winograd algorithm) for extremely large matrices.
+
+Let $\mathbf{A}, \mathbf{B}$ two square matrix, $\in R^{2^{n} \times 2^{n}}$, with $n=2,3, \ldots$. We want to calculate the matrix $\mathbf{C}$, defined by $\mathbf{C}=\mathbf{A B}$.
+
+First, we divide the two matrix $\mathbf{A}, \mathbf{B}$, into equally size block-matrices of dimensions $2^{n-1} \times 2^{n-1}$ :
+$$
+\mathbf{A}=\left[\begin{array}{ll}
+\mathbf{A}_{11} & \mathbf{A}_{12} \\
+\mathbf{A}_{21} & \mathbf{A}_{22}
+\end{array}\right] \quad \mathbf{B}=\left[\begin{array}{ll}
+\mathbf{B}_{11} & \mathbf{B}_{12} \\
+\mathbf{B}_{21} & \mathbf{B}_{22}
+\end{array}\right]
+$$\\
+Now define new matrices:
+$\mathbf{M}_{1}=\left(\mathbf{A}_{11}+\mathbf{A}_{22}\right)\left(\mathbf{B}_{11}+\mathbf{B}_{22}\right)$\\
+$\mathbf{M}_{2}=\left(\mathbf{A}_{21}+\mathbf{A}_{22}\right) \mathbf{B}_{11}$\\
+$\mathbf{M}_{3}=\mathbf{A}_{11}\left(\mathbf{B}_{12}-\mathbf{B}_{22}\right)$\\
+$\mathbf{M}_{4}=\mathbf{A}_{22}\left(\mathbf{B}_{21}-\mathbf{B}_{11}\right)$\\
+$\mathbf{M}_{5}=\left(\mathbf{A}_{11}+\mathbf{A}_{12}\right) \mathbf{B}_{22}$\\
+$\mathbf{M}_{6}=\left(\mathbf{A}_{21}-\mathbf{A}_{11}\right)\left(\mathbf{B}_{11}+\mathbf{B}_{12}\right)$\\
+$\mathbf{M}_{7}=\left(\mathbf{A}_{12}-\mathbf{A}_{22}\right)\left(\mathbf{B}_{21}+\mathbf{B}_{22}\right)$\\
+The block-matrices of the product matrix $\mathbf{C}$ are:
+$\mathbf{C}_{11}=\mathbf{M}_{1}+\mathbf{M}_{4}-\mathbf{M}_{5}+\mathbf{M}_{7}$
+$$
+\begin{aligned}
+&\mathbf{C}_{12}=\mathbf{M}_{3}+\mathbf{M}_{5} \\
+&\mathbf{C}_{21}=\mathbf{M}_{2}+\mathbf{M}_{4} \\
+&\mathbf{C}_{22}=\mathbf{M}_{1}-\mathbf{M}_{2}+\mathbf{M}_{3}+\mathbf{M}_{6}
+\end{aligned}
+$$
+So the matrix $\mathbf{C}$ is:
+$$
+\mathbf{C}=\left[\begin{array}{ll}
+\mathbf{C}_{11} & \mathbf{C}_{12} \\
+\mathbf{C}_{21} & \mathbf{C}_{22}
+\end{array}\right]
+$$
+Example
+We have these two matrices:
+$$
+\mathbf{A}=\left[\begin{array}{cccc}
+7 & 31 & 13 & 106 \\
+24 & 19 & 51 & 68 \\
+139 & 127 & 121 & 117 \\
+13 & 105 & 53 & 59
+\end{array}\right] \quad \mathbf{B}=\left[\begin{array}{cccc}
+22 & 111 & 93 & 181 \\
+155 & 42 & 120 & 17 \\
+171 & 115 & 26 & 26 \\
+167 & 203 & 6 & 31
+\end{array}\right]
+$$
+Split the matrices:
+$$
+\mathbf{A}=\left[\begin{array}{cc|cc}
+7 & 31 & 13 & 106 \\
+24 & 19 & 51 & 68 \\
+\hline 139 & 127 & 121 & 117 \\
+13 & 105 & 53 & 59
+\end{array}\right] \quad \mathbf{B}=\left[\begin{array}{cc|cc}
+22 & 111 & 93 & 181 \\
+155 & 42 & 120 & 17 \\
+\hline 171 & 115 & 26 & 26 \\
+167 & 203 & 6 & 31
+\end{array}\right]
+$$
+Now we have, for example, $\mathbf{A}_{11}=\left[\begin{array}{cc}7 & 31 \\ 24 & 19\end{array}\right]$, and $\mathbf{B}_{21}=\left[\begin{array}{ll}171 & 115 \\ 167 & 203\end{array}\right]$.
+Now calculate the matrices $\mathbf{M}_{1: 7}$
+$$
+\begin{aligned}
+\mathbf{M}_{1} &=\left[\begin{array}{ll}
+29972 & 16254 \\
+28340 & 16243
+\end{array}\right] \\
+\mathbf{M}_{2} &=\left[\begin{array}{ll}
+43540 & 26872 \\
+39108 & 14214
+\end{array}\right]
+\end{aligned}
+$$
+$\mathbf{M}_{3}=\left[\begin{array}{cc}4003 & 3774 \\ 651 & 3454\end{array}\right]$\\
+$\mathbf{M}_{4}=\left[\begin{array}{ll}19433 & 8605 \\ 19321 & 9711\end{array}\right]$\\
+$\mathbf{M}_{5}=\left[\begin{array}{ll}1342 & 2472 \\ 4767 & 4647\end{array}\right]$\\
+$\mathbf{M}_{6}=\left[\begin{array}{cc}41580 & 22385 \\ 44208 & 1862\end{array}\right]$\\
+$\mathbf{M}_{7}=\left[\begin{array}{ll}-23179 & 1163 \\ -17802 & 1824\end{array}\right]$\\
+
+Now calculate:
+$$
+\begin{aligned}
+&\mathbf{C}_{11}=\left[\begin{array}{ll}
+24884 & 23550 \\
+25092 & 23131
+\end{array}\right] \\
+&\mathbf{C}_{12}=\left[\begin{array}{ll}
+5345 & 6246 \\
+5418 & 8101
+\end{array}\right] \\
+&\mathbf{C}_{21}=\left[\begin{array}{ll}
+62973 & 35477 \\
+58429 & 23925
+\end{array}\right] \\
+&\mathbf{C}_{22}=\left[\begin{array}{ll}
+32015 & 15541 \\
+34091 & 7345
+\end{array}\right]
+\end{aligned}
+$$
+The final result is:
+$$
+\mathbf{C}=\left[\begin{array}{cccc}
+24884 & 23550 & 62973 & 35477 \\
+25092 & 23131 & 58429 & 23925 \\
+5345 & 6246 & 32015 & 15541 \\
+5418 & 8101 & 34091 & 7345
+\end{array}\right]
+$$
+
+Solution using R\\
+We saw that there are 4 steps to be solved:\\
+1. Split matrices\\
+2. Calculate $\mathbf{M}_{1: 7}$\\
+3. Calculate block-matrices of the product $\mathbf{C}$\\
+4. Recompose the matrix $\mathbf{C}$\\
+<<>>=
+A = matrix ( c
+(7 ,31 ,13 ,106 ,24 ,19 ,51 ,68 ,139 ,127 ,121 ,117 ,13 ,105 ,53 ,59) ,
+byrow =T , nrow =4)
+B = matrix ( c
+(22 ,111 ,93 ,181 ,155 ,42 ,120 ,17 ,171 ,115 ,26 ,26 ,167 ,203 ,6 ,31) ,
+byrow =T , nrow =4)
+# Step -1 -
+A11 = A [1:2 ,1:2]
+A12 = A [1:2 ,3:4]
+A21 = A [3:4 ,1:2]
+A22 = A [3:4 ,3:4]
+B11 = B [1:2 ,1:2]
+B12 = B [1:2 ,3:4]
+B21 = B [3:4 ,1:2]
+B22 = B [3:4 ,3:4]
+# Step -2 -
+M1 = ( A11 + A22 ) %*% ( B11 + B22 )
+M2 = ( A21 + A22 ) %*% B11
+M3 = A11 %*% ( B12 - B22 )
+M4 = A22 %*% ( B21 - B11 )
+M5 = ( A11 + A12 ) %*% B22
+M6 = ( A21 - A11 ) %*% ( B11 + B12 )
+M7 = ( A12 - A22 ) %*% ( B21 + B22 )
+# Step -3 -
+C11 = M1 + M4 - M5 + M7
+C12 = M3 + M5
+C21 = M2 + M4
+C22 = M1 - M2 + M3 + M6
+# Step -4 -
+C = rbind ( cbind ( C11 , C12 ) , cbind ( C21 , C22 ) )
+C
+A%*%B
+all(C==A%*%B)
+@
+
+\clearpage
+\section{Solving system of linear equations}
+Example 11 Matrices are closely related to systems of linear equations. Consider the two equations
+$$
+\begin{aligned}
+x_{1}+3 x_{2} &=7 \\
+2 x_{1}+4 x_{2} &=10
+\end{aligned}
+$$
+The system can be written in matrix form
+$$
+\left[\begin{array}{ll}
+1 & 3 \\
+2 & 4
+\end{array}\right]\left[\begin{array}{l}
+x_{1} \\
+x_{2}
+\end{array}\right]=\left[\begin{array}{r}
+7 \\
+10
+\end{array}\right] \text { i.e. } A x=b
+$$
+Since $A^{-1} A=I$ and since $I x=x$ we have
+$$
+x=A^{-1} b=\left[\begin{array}{rr}
+-2 & 1.5 \\
+1 & -0.5
+\end{array}\right]\left[\begin{array}{r}
+7 \\
+10
+\end{array}\right]=\left[\begin{array}{l}
+1 \\
+2
+\end{array}\right]
+$$
+A geometrical approach to solving these equations is as follows: Isolate $x_{2}$ in the equations:
+$$
+x_{2}=\frac{7}{3}-\frac{1}{3} x_{1} \quad x_{2}=\frac{1}{0} 4-\frac{2}{4} x_{1}
+$$
+These two lines intersect at a point and gives the solution as $x_{1}=1, x_{2}=2$.
+<<>>=
+A=matrix(c(1,2,3,4),ncol=2)
+b=c(7,10)
+x=solve(A) %*% b
+x
+@
+
+\clearpage
+\section{Eigenvalues and eigenvectors}
+\subsection{Characteristic equation}
+Consider a square matrix $A$ of dimension $n$. The scalar eigenvalue $\lambda$ and an $n \times 1$ eigenvectors $x$ of $A$ are defined from a fundamental defining equation, sometimes called the characteristic equation.
+$$
+A x=\lambda x
+$$
+where the eigenvector $x$ must be further assumed to be nonzero. (why?) The Eq. (9.1) obviously holds true when $x=0$ with all $n$ zero elements. The defining equation for eigenvalues and eigenvectors rules out the trivial solution $x=0$. Since $x \neq 0$, something else must be zero for Eq. to hold. It is not intuitively obvious, but true that the equation $A x-$\\
+$\lambda x=0$ can hold when $\left(A x-\lambda I_{n}\right) x=0$, where $I_{n}$ denotes the identity matrix, which must be inserted so that matrix subtraction of $\lambda$ from $A$ is conformable (makes sense). Since $x \neq 0$, we must make the preceding matrix $\left(A x-\lambda I_{n}\right)$ somehow zero. We cannot make it a null matrix with all elements zero, because $A$ is given to contain nonzero elements. However, we can make a scalar associated with the matrix zero. The determinant is a scalar associated with a matrix. Thus we require that the following determinantal equation holds.
+$$
+\operatorname{det}\left(A-\lambda I_{n}\right)=0
+$$
+Let us use $\mathrm{R}$ to better understand the defining equation Eq. $(9.1)$ by computing Eq. (9.2) for a simple example of a $2 \times 2$ matrix with elements 1 to 4. R computes the (first) eigenvalue to be $\lambda=5.3722813$. 
+<<>>=
+A=matrix(1:4,2);A #view A
+ea=eigen(A) #object ea contains eigenvalues-vectors of A
+ea
+lam=ea$val[1];lam #view lambda
+x=ea$vec[,1];x # view x
+det(A-lam*diag(2)) #should be zero
+lam^2-5*lam #solving quadratic OK if this is 2
+@
+Thus in the example $\operatorname{det}\left(A-\lambda I_{n}\right)=0 .$ More explicitly we have:
+$$
+\text { If } A=\left[\begin{array}{ll}
+1 & 3 \\
+2 & 4
+\end{array}\right] \text { then }\left(\mathrm{A}-\lambda \mathrm{I}_{\mathrm{n}}\right)=\left[\begin{array}{cc}
+1-\lambda & 3 \\
+2 & 4-\lambda
+\end{array}\right]
+$$
+The determinant can be written as $[(1-\lambda)(4-\lambda)-2 * 3]=0$, leading to a quadratic polynomial in $\lambda$ as $\left[4+\lambda^{2}-\lambda-4 \lambda-6\right]=0$, with two roots, With two roots it is obvious that we have two eigenvalues (characteristic roots).
+
+Clearly, R computations claim that $5.372281$ is one of the roots of $\left[\lambda^{2}-\right.$ $5 \lambda-2]=0 .$ A direct check on a root is obtained by simply substituting $\lambda=5.372281$ in $\left[\lambda^{2}-5 \lambda-2\right]$ and seeing that it equals zero. The last line of the $\mathrm{R}$ snippet  accomplishes this task of checking.
+\subsection{Eigenvectors}
+
+ The R function 'eigen' provides all eigenvectors. For the $2 \times 2$ example of the earlier snippet, the two eigenvectors are available by issuing the $\mathrm{R}$ command: 'ea\$vec.' as seen in the following output by $\mathrm{R}$ 
+<<>>=
+G=ea$vec; G #view matrix of eigenvectors
+@
+\subsection{Eigenvalues}
+Eigenvalues are a special set of scalars associated with a linear system of equations (i.e., a matrix equation) that are sometimes also known as characteristic roots, characteristic values.
+<<>>=
+ea$values
+@
+\clearpage
+
+\section{Matrix Decomposition}
+
+\subsection{Gaussian Elimination Method}
+
+Gaussian elimination is a method for solving matrix equations of the form
+$$
+A x=b \text {. }
+$$
+To perform Gaussian elimination starting with the system of equations
+$$
+\left[\begin{array}{cccc}
+a_{11} & a_{12} & \cdots & a_{1 k} \\
+a_{21} & a_{22} & \cdots & a_{2 k} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{k 1} & a_{k 2} & \cdots & a_{k k}
+\end{array}\right]\left[\begin{array}{c}
+x_{1} \\
+x_{2} \\
+\vdots \\
+x_{k}
+\end{array}\right]=\left[\begin{array}{c}
+b_{1} \\
+b_{2} \\
+\vdots \\
+b_{k}
+\end{array}\right]
+$$
+compose the "augmented matrix equation"
+$$
+\left[\begin{array}{cccc|c}
+a_{11} & a_{12} & \cdots & a_{1 k} & b_{1} \\
+a_{21} & a_{22} & \cdots & a_{2 k} & b_{2} \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+a_{k 1} & a_{k 2} & \cdots & a_{k k} & b_{k}
+\end{array}\right]\left[\begin{array}{c}
+x_{1} \\
+x_{2} \\
+\vdots \\
+x_{k}
+\end{array}\right] .
+$$
+Here, the column vector in the variables $\mathbf{x}$ is carried along for labeling the matrix rows. Now, perform elementary row operations to put the augmented matrix into the upper triangular form
+$$
+\left[\begin{array}{cccc|c}
+a_{11}^{\prime} & a_{12}^{\prime} & \cdots & a_{1 k}^{\prime} & b_{1}^{\prime} \\
+0 & a_{22}^{\prime} & \cdots & a_{2 k}^{\prime} & b_{2}^{\prime} \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \cdots & a_{k k}^{\prime} & b_{k}^{\prime}
+\end{array}\right] .
+$$
+
+A matrix that has undergone Gaussian elimination is said to be in echelon form.The echelon form of a matrix isn't unique, which means there are infinite answers possible when you perform row reduction. Reduced row echelon form is at the other end of the spectrum; it is unique, which means row-reduction on a matrix will produce the same answer no matter how you perform the same row operations.\\
+\clearpage
+
+
+\textbf{Row Echelon Form}
+
+A matrix is in row echelon form if it meets the following requirements:
+- The first non-zero number from the left (the "leading coefficient") is always to the right of the first non-zero number in the row above.
+- Rows consisting of all zeros are at the bottom of the matrix.
+$$
+\left[\begin{array}{ccccc}
+1 & a_{0} & a_{1} & a_{2} & a_{3} \\
+0 & 0 & 2 & a_{4} & a_{5} \\
+0 & 0 & 0 & 1 & a_{6}
+\end{array}\right]
+$$
+\\
+
+\textbf{Row Reduced Echelon Form}
+
+Reduced row echelon form is a type of matrix used to solve systems of linear equations. Reduced row echelon form has four requirements:
+- The first non-zero number in the first row (the leading entry) is the number $1 .$
+- The second row also starts with the number 1 , which is further to the right than the leading entry in the first row. For every subsequent row, the number 1 must be further to the right.
+- The leading entry in each row must be the only non-zero number in its column.
+- Any non-zero rows are placed at the bottom of the matrix.
+$$
+\left[\begin{array}{ccccc}
+1 & 0 & a_{1} & 0 & b_{1} \\
+0 & 1 & a_{2} & 0 & b_{2} \\
+0 & 0 & 0 & 1 & b_{3}
+\end{array}\right]
+$$ \\
+
+\textbf{How to perform Gaussian Elimination Method}
+
+Gaussian elimination is a way to find a solution to a system of linear equations. The basic idea is that you perform a mathematical operation on a row and continue until only one variable is left. For example, some possible row operations are:
+
+- Interchange any two rows
+- Add two rows together.
+- Multiply one row by a non-zero constant $($ i.e. $1 / 3,-1,5)$
+You can also perform more than one row operation at a time. For example, multiply one row by a constant and then add the result to the other row.
+
+Following this, the goal is to end up with a matrix in reduced row echelon form where the leading coefficient, a 1 , in each row is to the right of the leading coefficient in the row above it. In other words, you need to get a 1 in the upper left corner of the matrix. The next row should have a 0 in position 1 and a 1 in position 2 . This gives you the solution to the system of linear equations.\\
+
+
+\textbf{Gaussian Elimination Example}
+
+Solve the following system of linear equations using Gaussian elimination:
+$$
+\begin{aligned}
+&-x+5 y=7 \\
+&-2 x-7 y=-5
+\end{aligned}
+$$
+Step 1: Convert the equation into coefficient matrix form. In other words, just take the coefficient for the numbers and forget the variables for now:
+$$
+\left[\begin{array}{rrr}
+1 & 5 & 7 \\
+-2 & -7 & -5
+\end{array}\right]
+$$
+Step 2: Turn the numbers in the bottom row into positive by adding 2 times the first row:
+$$
+\left[\begin{array}{lll}
+1 & 5 & 7 \\
+0 & 3 & 9
+\end{array}\right]
+$$
+
+Step 3: Multiply the second row by $1 / 3$. This gives you your second leading 1 :
+$$
+\left[\begin{array}{lll}
+1 & 5 & 7 \\
+0 & 1 & 3
+\end{array}\right]
+$$
+Step 4: Multiply row 2 by $-5$, and then add this to row 1 :
+$$
+\left[\begin{array}{rrr}
+1 & 0 & -8 \\
+0 & 1 & 3
+\end{array}\right]
+$$
+That's it!
+In the first row, you have $x=-8$ and in the second row, $y=3$. Note that $x$ and $y$ are in the same positions as when you converted the equation in step 1,50 all you have to do is read the solution:
+$$
+\left[\begin{array}{ccc}
+1 & 0 & -8 \\
+0 & 1 & (3)
+\end{array}\right]
+$$
+
+\textbf{R code}
+
+In R, we can use \emph{pracma} library to call the function \textbf{\textit{rref}} which transforms the augmented matrix $A:b$ into row reduced echelon form and thus solves the system of linear equations using Gaussian Elimination Method.
+<<>>=
+library(pracma)
+
+A = matrix(c(1,5,-2,-7),byrow=T,nrow=2,ncol=2)
+b = matrix(c(7,-5),nrow=2,ncol=1)
+
+rref(cbind(A, b))
+@
+
+As we can see, we get the same result, so our method works correctly as it should be.
+
+\subsection{LU Decomposition}
+
+LU decomposition
+Every square matrix $A$ can be decomposed into a product of a lower triangular matrix $L$ and a upper triangular matrix $U$, as described in $L U$ decomposition.
+$$
+A=L U
+$$
+It is a modified form of Gaussian elimination. While the Cholesky decomposition only works for symmetric, positive definite matrices, the more general LU decomposition works for any square matrix.
+There are several algorithms for calculating $L$ and $U$. To derive Crout's algorithm for a $3 \times 3$ example, we have to solve the following system:
+$$
+A=\left(\begin{array}{lll}
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+a_{31} & a_{32} & a_{33}
+\end{array}\right)=\left(\begin{array}{ccc}
+l_{11} & 0 & 0 \\
+l_{21} & l_{22} & 0 \\
+l_{31} & l_{32} & l_{33}
+\end{array}\right)\left(\begin{array}{ccc}
+u_{11} & u_{12} & u_{13} \\
+0 & u_{22} & u_{23} \\
+0 & 0 & u_{33}
+\end{array}\right)=L U
+$$
+We now would have to solve 9 equations with 12 unknowns. To make the system uniquely solvable, usually the diagonal elements of $L$ are set to 1
+$$
+\begin{aligned}
+&l_{11}=1 \\
+&l_{22}=1 \\
+&l_{33}=1
+\end{aligned}
+$$
+so we get a solvable system of 9 unknowns and 9 equations.
+$$
+A=\left(\begin{array}{lll}
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+a_{31} & a_{32} & a_{33}
+\end{array}\right)=\left(\begin{array}{ccc}
+1 & 0 & 0 \\
+l_{21} & 1 & 0 \\
+l_{31} & l_{32} & 1
+\end{array}\right)\left(\begin{array}{ccc}
+u_{11} & u_{12} & u_{13} \\
+0 & u_{22} & u_{23} \\
+0 & 0 & u_{33}
+\end{array}\right)=$$
+$$
+\left(\begin{array}{ccc}
+u_{11} & u_{12} & u_{13} \\
+u_{11} l_{21} & u_{12} l_{21}+u_{22} & u_{13} l_{21}+u_{23} \\
+u_{11} l_{31} & u_{12} l_{31}+u_{22} l_{32} & u_{13} l_{31}+u_{23} l_{32}+u_{33}
+\end{array}\right)=L U
+$$
+Solving for the other $l$ and $u$, we get the following equations:
+
+$$
+\begin{aligned}
+&u_{11}=a_{11} \\
+&u_{12}=a_{12} \\
+&u_{13}=a_{13} \\
+&u_{22}=a_{22}-u_{12} l_{21} \\
+&u_{23}=a_{23}-u_{13} l_{21} \\
+&u_{33}=a_{33}-\left(u_{13} l_{31}+u_{23} l_{32}\right)
+\end{aligned}
+$$
+and for $l$ :
+$$
+\begin{aligned}
+&l_{21}=\frac{1}{u_{11}} a_{21} \\
+&l_{31}=\frac{1}{u_{11}} a_{31} \\
+&l_{32}=\frac{1}{u_{22}}\left(a_{32}-u_{12} l_{31}\right)
+\end{aligned}
+$$
+We see that there is a calculation pattern, which can be expressed as the following formulas, first for $U$
+$$
+u_{i j}=a_{i j}-\sum_{k=1}^{i-1} u_{k j} l_{i k}
+$$
+and then for $L$
+$$
+l_{i j}=\frac{1}{u_{j j}}\left(a_{i j}-\sum_{k=1}^{j-1} u_{k j} l_{i k}\right)
+$$
+We see in the second formula that to get the $l_{i j}$ below the diagonal, we have to divide by the diagonal element (pivot) $u_{j j}$, so we get problems when $u_{j j}$ is either 0 or very small, which leads to numerical instability.
+The solution to this problem is pivoting $A$, which means rearranging the rows of $A$, prior to the $L U$ decomposition, in a way that the largest element of each column gets onto the diagonal of $A$. Rearranging the rows means to multiply $A$ by a permutation matrix $P$ :
+
+$$
+P A \Rightarrow A^{\prime}
+$$
+Example:
+$$
+\left(\begin{array}{ll}
+0 & 1 \\
+1 & 0
+\end{array}\right)\left(\begin{array}{ll}
+1 & 4 \\
+2 & 3
+\end{array}\right) \Rightarrow\left(\begin{array}{ll}
+2 & 3 \\
+1 & 4
+\end{array}\right)
+$$
+The decomposition algorithm is then applied on the rearranged matrix so that
+$$
+P A=L U
+$$
+
+\textbf{In R}, The easiest way to do this is to use the \emph{lu} function in the \textbf{\textit{Matrix package}}. This will give you a slight variant on the A=LU decomposition. You'll get A=PLU instead, where P is a permutation matrix. Note LU decomposition can only be performed on invertible matrices.
+<<>>=
+library(Matrix)
+mat = matrix(c(1,2,3,4,5,6,5,4,3,2,1,2,-3,2,5,20), ncol = 4)
+det(mat) # -144 => matrix is not singular 
+mat_lu = lu(mat)
+expand(mat_lu) #contains P, L, U
+@
+
+\subsection{Cholesky Decomposition}
+
+Cholesky decompositions $\left(A=U^{T} U\right)$ only work with matrices that are
+- real
+- symmetric
+- positive definite (i.e. symmetric and only has positive eigenvalues, or symmetric and only has positive pivots)
+- square
+If you're getting a strange error when calculating the Cholesky decomposition of a matrix, it's probably because it has negative eigenvalues.
+
+In R, the \textbf{\textit{Matrix}} package as \emph{chol()} function which is used for cholesky decomposition of a real, symmetric, positive definite square matrix.
+
+<<>>=
+library(Matrix)
+x = matrix(c(8,5,5,4), nrow = 2)
+y = matrix(c(8,6,6,4), nrow = 2)  #y marix has negative eignevalues, so chol(y) will give error
+eigen(x) # positive eigenvalues
+eigen(y) # negative eigenvalues
+chol(x) # returns stuff 
+@
+
+You can also find the inverse of a matrix using the Cholesky decomposition:
+<<>>=
+#Two ways to find the inverse 
+x = matrix(c(8,5,5,4), nrow = 2)
+x_chol = chol(x)
+
+#usual way of finding an inverse 
+solve(x)
+#using the Cholesky decomposition 
+chol2inv(x_chol) 
+
+#check the two are the same 
+solve(x) - chol2inv(x_chol) #pretty much 0 
+@
+
+\subsection{QR Decomposition}
+
+The QR decomposition (also called the QR factorization) of a matrix is a decomposition of the matrix into an orthogonal matrix and a triangular matrix. A QR decomposition of a real square matrix $A$ is a decomposition of $A$ as
+$$
+A=Q R,
+$$
+where $Q$ is an orthogonal matrix (i.e. $Q^{T} Q=I$ ) and $R$ is an upper triangular matrix. If $A$ is nonsingular, then this factorization is unique.
+
+There are several methods for actually computing the QR decomposition. One of such method is the Gram-Schmidt process.\\
+\textbf{Gram-Schmidt process}\\
+Consider the GramSchmidt procedure, with the vectors to be considered in the process as columns of the matrix $A$. That is,
+$$
+A=\left[\begin{array}{l|l|l|l}
+\mathbf{a}_{1} & \mathbf{a}_{2} & \cdots & \mathbf{a}_{n}
+\end{array}\right]
+$$
+Then,
+$$
+\begin{aligned}
+\mathbf{u}_{1} &=\mathbf{a}_{1}, \quad \mathbf{e}_{1}=\frac{\mathbf{u}_{1}}{\left\|\mathbf{u}_{1}\right\|} \\
+\mathbf{u}_{2} &=\mathbf{a}_{2}-\left(\mathbf{a}_{2} \cdot \mathbf{e}_{1}\right) \mathbf{e}_{1}, \quad \mathbf{e}_{2}=\frac{\mathbf{u}_{2}}{\left\|\mathbf{u}_{2}\right\|} \\
+\mathbf{u}_{k+1} &=\mathbf{a}_{k+1}-\left(\mathbf{a}_{k+1} \cdot \mathbf{e}_{1}\right) \mathbf{e}_{1}-\cdots-\left(\mathbf{a}_{k+1} \cdot \mathbf{e}_{k}\right) \mathbf{e}_{k}, \quad \quad \mathbf{e}_{k+1}=\frac{\mathbf{u}_{k+1}}{\left\|\mathbf{u}_{k+1}\right\|}
+\end{aligned}
+$$
+Note that $\|\cdot\|$ is the $L_{2}$ norm.\\
+
+
+\textbf{QR Factorization}\\
+
+
+The resulting QR factorization is
+$$
+A=\left[\begin{array}{l|l|l|}
+\left.{\mathbf{a}_{1}\left|\mathbf{a}_{2}\right| \cdots \mid \mathbf{a}_{n}}\right]=\left[\begin{array}{c|c|c|}
+\mathbf{e}_{1}\left|\mathbf{e}_{2}\right| \cdots \mid \mathbf{e}_{n}
+\end{array}\right]\left[\begin{array}{cccc}
+\mathbf{a}_{1} \cdot \mathbf{e}_{1} & \mathbf{a}_{2} \cdot \mathbf{e}_{1} & \cdots & \mathbf{a}_{n} \cdot \mathbf{e}_{1} \\
+0 & \mathbf{a}_{2} \cdot \mathbf{e}_{2} & \cdots & \mathbf{a}_{n} \cdot \mathbf{e}_{2} \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & \mathbf{a}_{n} \cdot \mathbf{e}_{n}
+\end{array}\right]=Q R
+\end{array}\right.
+$$
+Note that once we find $\mathbf{e}_{1}, \ldots, \mathbf{e}_{n}$, it is not hard to write the $\mathrm{QR}$ factorization.
+
+2 Example
+Consider the matrix
+$$
+A=\left[\begin{array}{lll}
+1 & 1 & 0 \\
+1 & 0 & 1 \\
+0 & 1 & 1
+\end{array}\right]
+$$
+with the vectors $\mathbf{a}_{1}=(1,1,0)^{T}, \mathbf{a}_{2}=(1,0,1)^{T}, \mathbf{a}_{3}=(0,1,1)^{T}$.
+Note that all the vectors considered above and below are column vectors. From now on, I will drop ${ }^{T}$ notation for simplicity, but we have to remember that all the vectors are column vectors.
+Performing the Gram-Schmidt procedure, we obtain:
+$$
+\begin{aligned}
+\mathbf{u}_{1} &=\mathbf{a}_{1}=(1,1,0), \\
+\mathbf{e}_{1} &=\frac{\mathbf{u}_{1}}{\left\|\mathbf{u}_{1}\right\|}=\frac{1}{\sqrt{2}}(1,1,0)=\left(\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0\right), \\
+\mathbf{u}_{2} &=\mathbf{a}_{2}-\left(\mathbf{a}_{2} \cdot \mathbf{e}_{1}\right) \mathbf{e}_{1}=(1,0,1)-\frac{1}{\sqrt{2}}\left(\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0\right)=\left(\frac{1}{2},-\frac{1}{2}, 1\right), \\
+\mathbf{e}_{2} &=\frac{\mathbf{u}_{2}}{\left\|\mathbf{u}_{2}\right\|}=\frac{1}{\sqrt{3 / 2}}\left(\frac{1}{2},-\frac{1}{2}, 1\right)=\left(\frac{1}{\sqrt{6}},-\frac{1}{\sqrt{6}}, \frac{2}{\sqrt{6}}\right), \\
+\mathbf{u}_{3} &=\mathbf{a}_{3}-\left(\mathbf{a}_{3} \cdot \mathbf{e}_{1}\right) \mathbf{e}_{1}-\left(\mathbf{a}_{3} \cdot \mathbf{e}_{2}\right) \mathbf{e}_{2} \\
+&=(0,1,1)-\frac{1}{\sqrt{2}}\left(\frac{1}{\sqrt{2}}, \frac{1}{\sqrt{2}}, 0\right)-\frac{1}{\sqrt{6}}\left(\frac{1}{\sqrt{6}},-\frac{1}{\sqrt{6}}, \frac{2}{\sqrt{6}}\right)=\left(-\frac{1}{\sqrt{3}}, \frac{1}{\sqrt{3}}, \frac{1}{\sqrt{3}}\right), \\
+\mathbf{e}_{3} &=\frac{\mathbf{u}_{3}}{\left\|\mathbf{u}_{3}\right\|}=\left(-\frac{1}{\sqrt{3}}, \frac{1}{\sqrt{3}}, \frac{1}{\sqrt{3}}\right) .
+\end{aligned}
+$$
+Thus,
+
+$$
+Q=\left[\mathbf{e}_{1}\left|\mathbf{e}_{2}\right| \cdots \mid \mathbf{e}_{n}\right]=\left[\begin{array}{ccc}
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{6}} & -\frac{1}{\sqrt{3}} \\
+\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{6}} & \frac{1}{\sqrt{3}} \\
+0 & \frac{2}{\sqrt{6}} & \frac{1}{\sqrt{3}}
+\end{array}\right]
+$$
+
+$$
+R=\left[\begin{array}{ccc}
+\mathbf{a}_{1} \cdot \mathbf{e}_{1} & \mathbf{a}_{2} \cdot \mathbf{e}_{1} & \mathbf{a}_{3} \cdot \mathbf{e}_{1} \\
+0 & \mathbf{a}_{2} \cdot \mathbf{e}_{2} & \mathbf{a}_{3} \cdot \mathbf{e}_{2} \\
+0 & 0 & \mathbf{a}_{3} \cdot \mathbf{e}_{3}
+\end{array}\right]=\left[\begin{array}{ccc}
+\frac{2}{\sqrt{2}} & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\
+0 & \frac{3}{\sqrt{6}} & \frac{1}{\sqrt{6}} \\
+0 & 0 & \frac{2}{\sqrt{3}}
+\end{array}\right]
+$$
+
+\textbf{In R}, we can use qr() function to decompose a matrix A into a product A=QR where Q is a matrix with unit norm orthogonal vectors and R is an upper triangular matrix.\\
+<<>>=
+A = matrix(c(1,1,0,1,0,1,0,1,1),byrow =TRUE, nrow=3, ncol=3)  #take the matrix as in example
+QR = qr(A) #created a variable QR for ease
+QR$rank  #find the rank
+Q = qr.Q(QR); Q  #find the Q factor
+R <- qr.R(QR); R  #find the R factor
+qr.X(QR)  #reconstruct A
+@
+
+\subsection{Singular Value Decomposition}
+
+SVD (Singular Value Decomposition) stands for splitting a matrix $A$ into a product $A=U S V^{H}$ where $U$ and $V$ are unitary matrices and $S$ is a diagonal matrix consisting of singular values on its main diagonal arranged in non-increasing order where all the singular values are non-negative.
+Computing the singular value decomposition of a matrix:
+
+
+<<>>=
+A = matrix(c(1, 2, -1, 3, -6, 9, -1, 2, 1), nrow=3)
+svd(A)  #using the inbuilt function svd()
+svd(A)$d # find the diagonal entries of S matrix
+svd(A)$u  #u matrix
+svd(A)$v   #v matrix
+svd(A)$d[1]     #largest singular value
+tail(svd(A)$d, n=1)    #smallest singular value
+
+@
+
+
+\end{document}
